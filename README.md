@@ -74,42 +74,32 @@ The educational goal is to teach **how SOC analysts actually think**:
 
 ## 🖼️ Screenshots
 
-> **📸 Screenshot placeholders** — the images below are temporary grey boxes. Replace each `screenshots/*.svg` with a real `.png`/`.jpg`, then update the path in this README (or just save your image with the same filename and change the extension).
+<img width="554" height="437" alt="image" src="https://github.com/user-attachments/assets/5ad9926f-cda6-4ab5-911e-87025bf601f1" />
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     SCREENSHOT SLOT 1 — Dashboard
-     Replace the <img> below with:  screenshots/dashboard.png
-     ══════════════════════════════════════════════════════════════════════ -->
+
+<img width="543" height="335" alt="image" src="https://github.com/user-attachments/assets/75fbad67-32f9-4de4-8703-11e6c5eefda8" />
 ### 1. Triage Dashboard
-<img src="screenshots/dashboard.svg" alt="Screenshot placeholder — Triage Dashboard" width="100%">
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     SCREENSHOT SLOT 2 — Password Guessing
-     Replace the <img> below with:  screenshots/password-guessing.png
-     ══════════════════════════════════════════════════════════════════════ -->
-### 2. Possible Password Guessing Followed by Success
-<img src="screenshots/password-guessing.svg" alt="Screenshot placeholder — Password Guessing finding" width="100%">
+<img width="518" height="320" alt="image" src="https://github.com/user-attachments/assets/ef3833f3-2d8d-4c15-b9b8-e01588058ef5" />
+### 2. Timelines
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     SCREENSHOT SLOT 3 — New Account Granted Privileges
-     Replace the <img> below with:  screenshots/privilege-escalation.png
-     ══════════════════════════════════════════════════════════════════════ -->
-### 3. New Account Granted Privileges
-<img src="screenshots/privilege-escalation.svg" alt="Screenshot placeholder — New Account Granted Privileges finding" width="100%">
+### 3. Investigation Findings
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     SCREENSHOT SLOT 4 — Security Audit Log Cleared
-     Replace the <img> below with:  screenshots/log-cleared.png
-     ══════════════════════════════════════════════════════════════════════ -->
-### 4. Security Audit Log Cleared
-<img src="screenshots/log-cleared.svg" alt="Screenshot placeholder — Security Audit Log Cleared finding" width="100%">
+<img width="518" height="316" alt="image" src="https://github.com/user-attachments/assets/e3db3c23-0b3a-4ba1-8d8f-154097675c29" />
+### 3.1 Possible Password Guessing Followed by Success
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     SCREENSHOT SLOT 5 — Upload & Demo Data
-     Replace the <img> below with:  screenshots/upload-and-demo.png
-     ══════════════════════════════════════════════════════════════════════ -->
+
+<img width="518" height="287" alt="image" src="https://github.com/user-attachments/assets/47b38417-daba-4cad-96cb-a5d708b38824" />
+### 3.2 New Account Granted Privileges
+
+
+<img width="515" height="266" alt="image" src="https://github.com/user-attachments/assets/3e12271a-554c-4300-9caa-127870601ba1" />
+### 3.3 Security Audit Log Cleared
+
+
+<img width="550" height="385" alt="image" src="https://github.com/user-attachments/assets/9cc861bc-cb09-49fe-8875-b575ba844f16" />
 ### 5. Upload & Demo Data
-<img src="screenshots/upload-and-demo.svg" alt="Screenshot placeholder — Upload and Demo Data area" width="100%">
+
 
 ---
 
