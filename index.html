@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows Security Event Log Triage Tool</title>
+    <meta name="description" content="An educational, browser-based SOC triage tool for Windows Security Event Log CSV exports. All analysis happens locally in your browser.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <p class="eyebrow">Educational SOC Triage</p>
+            <h1>Windows Security Event Log Triage Tool</h1>
+            <p class="subtitle">Turn exported Windows Security events into an easy-to-understand SOC-style triage report.</p>
+
+            <div class="privacy-banner" role="note">
+                <strong>&#128274; Privacy guarantee:</strong> Your Windows security logs are analysed locally in your browser. Files are not uploaded or transmitted anywhere.
+            </div>
+            <p class="disclaimer">
+                <strong>Disclaimer:</strong> Educational SOC triage tool. Findings indicate activity that may deserve investigation and do not prove malicious behaviour. Only analyse logs from systems you own or are authorised to investigate.
+            </p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="panel educational-section" aria-labelledby="soc-heading">
+            <h2 id="soc-heading">How to Think Like a SOC Analyst</h2>
+            <p class="insight-quote">&ldquo;One security event rarely tells the entire story. Analysts build context by correlating multiple events.&rdquo;</p>
+            <ol class="steps">
+                <li><strong>Identify the event.</strong> What Event ID is it, and what does it normally mean?</li>
+                <li><strong>Understand what happened.</strong> Read the details: who, what, when, and from where.</li>
+                <li><strong>Identify the affected user or system.</strong> Which account or computer is involved?</li>
+                <li><strong>Determine whether the activity is expected.</strong> Is this routine for this user, machine, and time of day?</li>
+                <li><strong>Look for related events.</strong> Are there other events nearby that add context?</li>
+                <li><strong>Correlate authentication and privilege activity.</strong> Did failures lead to success? Was a new account given power?</li>
+                <li><strong>Gather additional evidence.</strong> Check other telemetry (endpoint, MFA, firewall) if available.</li>
+                <li><strong>Decide whether escalation is required.</strong> Is this worth raising with the team?</li>
+            </ol>
+            <p class="insight-quote">&ldquo;A detection is a reason to investigate, not proof that an attacker is present.&rdquo;</p>
+
+            <h3>Windows Event Viewer Instructions</h3>
+            <ol class="steps">
+                <li>Open <strong>Windows Event Viewer</strong>.</li>
+                <li>Navigate to <strong>Windows Logs &rarr; Security</strong>.</li>
+                <li>Select or filter the events you want to investigate.</li>
+                <li>Export the events to CSV (see the README for the recommended method that includes the <em>Message</em> text).</li>
+                <li>Upload the CSV into this tool below.</li>
+            </ol>
+        </section>
+        <section class="panel controls-section" aria-labelledby="upload-heading">
+            <h2 id="upload-heading">Upload Windows Event CSV</h2>
+            <div class="upload-area" id="drop-zone" role="button" tabindex="0" aria-label="Upload CSV file by drag and drop or click to browse">
+                <p class="upload-icon" aria-hidden="true">&#128196;</p>
+                <p><strong>Drag and drop your CSV file here</strong>, or click to browse.</p>
+                <input type="file" id="file-input" accept=".csv,text/csv" class="visually-hidden">
+                <button id="upload-btn" class="primary-btn" type="button">Select CSV File</button>
+                <div id="upload-status" class="upload-status" aria-live="polite"></div>
+            </div>
+
+            <div class="test-mode">
+                <h3>Test Mode <span class="badge-demo">Demo Data</span></h3>
+                <p class="muted">Fictional sample logs. No real people, computers, or organisations.</p>
+                <div class="btn-row">
+                    <button id="btn-normal" class="secondary-btn" type="button">Load Normal Sample</button>
+                    <button id="btn-password" class="secondary-btn" type="button">Load Password Guessing Sample</button>
+                    <button id="btn-persistence" class="secondary-btn" type="button">Load Privilege Escalation Sample</button>
+                    <button id="btn-mixed" class="secondary-btn" type="button">Load Mixed SOC Sample</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel settings-section" aria-labelledby="settings-heading">
+            <h2 id="settings-heading">Detection Settings</h2>
+            <p class="muted">Security thresholds vary by environment. These values are educational defaults rather than universal SOC detection rules.</p>
+            <div class="grid-controls">
+                <label for="thresh-failed">Failed login threshold
+                    <input type="number" id="thresh-failed" value="5" min="1" max="1000">
+                </label>
+                <label for="thresh-window">Failed login time window (minutes, optional)
+                    <input type="number" id="thresh-window" value="10" min="0" max="1440">
+                </label>
+            </div>
+            <button id="btn-reset" class="secondary-btn" type="button">Reset Defaults</button>
+        </section>
+
+        <section class="panel filters-section" aria-labelledby="filters-heading" id="filters-section" hidden>
+            <h2 id="filters-heading">Filter Results</h2>
+            <div class="search-row">
+                <label for="search-input" class="visually-hidden">Search findings</label>
+                <input type="search" id="search-input" placeholder="Search account, event ID, severity, source IP...">
+            </div>
+            <div class="filter-grid">
+                <label>Severity
+                    <select id="filter-severity"></select>
+                </label>
+                <label>Event type
+                    <select id="filter-eventtype"></select>
+                </label>
+                <label>Event ID
+                    <select id="filter-eventid"></select>
+                </label>
+                <label>Account
+                    <select id="filter-account"></select>
+                </label>
+                <label>Source IP
+                    <select id="filter-sourceip"></select>
+                </label>
+            </div>
+            <button id="btn-clear-filters" class="secondary-btn" type="button">Clear Filters</button>
+        </section>
+        <section class="panel dashboard" id="dashboard" hidden aria-labelledby="dash-heading">
+            <h2 id="dash-heading">Triage Dashboard</h2>
+            <div class="summary-cards" aria-live="polite">
+                <div class="card"><h3>Total events</h3><p id="stat-total">0</p></div>
+                <div class="card"><h3>Successful logons</h3><p id="stat-logon-success">0</p></div>
+                <div class="card"><h3>Failed logons</h3><p id="stat-logon-failed">0</p></div>
+                <div class="card"><h3>Accounts created</h3><p id="stat-accounts-created">0</p></div>
+                <div class="card"><h3>Privilege changes</h3><p id="stat-privilege">0</p></div>
+                <div class="card"><h3>Audit log cleared</h3><p id="stat-log-clear">0</p></div>
+                <div class="card"><h3>Process creation</h3><p id="stat-process">0</p></div>
+                <div class="card card-highlight"><h3>Requires investigation</h3><p id="stat-investigate">0</p></div>
+            </div>
+
+            <div class="grid-layout">
+                <div class="grid-panel">
+                    <h3>Top accounts by event count</h3>
+                    <ul id="list-top-accounts" class="data-list"></ul>
+                </div>
+                <div class="grid-panel">
+                    <h3>Top accounts with failed logins</h3>
+                    <ul id="list-top-failed" class="data-list"></ul>
+                </div>
+                <div class="grid-panel">
+                    <h3>Most common Event IDs</h3>
+                    <ul id="list-top-eventids" class="data-list"></ul>
+                </div>
+            </div>
+
+            <div class="grid-panel" id="admin-activity-panel" hidden>
+                <h3>Administrative / Privilege Activity</h3>
+                <p class="muted">Account and privilege changes, service installs, and log clearing found in this dataset. These are grouped for review but are not automatically assumed to be related.</p>
+                <ul id="admin-activity" class="data-list"></ul>
+            </div>
+
+            <div class="grid-panel">
+                <h3>Timeline of noteworthy activity</h3>
+                <ol id="timeline" class="timeline"></ol>
+            </div>
+
+            <div class="findings-header">
+                <h2>Investigation Findings</h2>
+                <p class="muted">Findings are reasons to investigate, not proof of compromise.</p>
+            </div>
+            <div id="findings-container" aria-live="polite"></div>
+
+            <div class="findings-header">
+                <h2>Parsed Events</h2>
+                <p class="muted" id="events-table-count">Showing parsed events from the uploaded file.</p>
+            </div>
+            <div class="table-wrap">
+                <table class="events-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">Event ID</th>
+                            <th scope="col">Level</th>
+                            <th scope="col">Account</th>
+                            <th scope="col">Source IP</th>
+                            <th scope="col">Computer</th>
+                            <th scope="col">Message</th>
+                        </tr>
+                    </thead>
+                    <tbody id="events-table-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel reference-section" aria-labelledby="ref-heading">
+            <h2 id="ref-heading">Event ID Reference (Beginner Cheat Sheet)</h2>
+            <p class="muted">A short plain-English guide to the events this tool recognises.</p>
+            <table class="ref-table">
+                <thead>
+                    <tr><th scope="col">Event ID</th><th scope="col">Name</th><th scope="col">What it means</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>4624</td><td>Successful logon</td><td>A user or service signed in successfully. Useful context, rarely suspicious on its own.</td></tr>
+                    <tr><td>4625</td><td>Failed logon</td><td>A login attempt was rejected. One is usually nothing; many in a row deserve a closer look.</td></tr>
+                    <tr><td>4688</td><td>Process created</td><td>A program was started. Useful for understanding what ran, but not a detection by itself.</td></tr>
+                    <tr><td>4720</td><td>User account created</td><td>A new account was made. Often routine, but should be verified.</td></tr>
+                    <tr><td>4726</td><td>User account deleted</td><td>An account was removed. Can be normal cleanup or an attacker covering tracks.</td></tr>
+                    <tr><td>4728</td><td>Added to global security group</td><td>A user joined a domain group. Privileged groups deserve extra attention.</td></tr>
+                    <tr><td>4732</td><td>Added to local security group</td><td>A user joined a machine-local group, like Administrators.</td></tr>
+                    <tr><td>1102</td><td>Security audit log cleared</td><td>The security log was wiped. Can be maintenance, but also a defence-evasion tactic.</td></tr>
+                    <tr><td>4104</td><td>PowerShell script block logging</td><td>Shows PowerShell commands that ran, which can reveal scripts executed on the endpoint.</td></tr>
+                    <tr><td>7045</td><td>Service installed</td><td>A new Windows service was created, which can be a normal install or a persistence method.</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&ldquo;The individual events matter, but the real value comes from understanding how they relate to one another.&rdquo;</p>
+            <p class="muted">All processing is client-side. No data leaves your browser.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
